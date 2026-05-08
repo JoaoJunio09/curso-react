@@ -2,13 +2,15 @@ import { Link } from "react-router-dom";
 import { Input } from "../../components/Input";
 import { useState } from "react";
 
+import { auth, db } from '../../services/firebaseConnection';
+
 export function Login() {
 
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 
-	function handleSubmit(e: FormDataEvent) {
-		e.preventDefault()
+	function handleSubmit(e: { preventDefault: () => void }) {
+		e.preventDefault();
 
 		console.log({
 			email: email,
