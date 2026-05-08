@@ -1,6 +1,5 @@
-import { FaAmilia, FaFacebook, FaInstagram, FaLink, FaSitemap, FaYoutube } from "react-icons/fa";
+import { FaInstagram, FaLink, FaYoutube } from "react-icons/fa";
 import { Social } from "../../components/Social";
-import { FaWebAwesome, FaWebflow, FaWeibo } from "react-icons/fa6";
 
 export function Home() {
 	return (
