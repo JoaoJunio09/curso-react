@@ -1,4 +1,4 @@
-import { Link, replace, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "../../components/Input";
 import { useState } from "react";
 
@@ -19,7 +19,7 @@ export function Login() {
 		}
 
 		signInWithEmailAndPassword(auth, email, password)
-		.then(() => {;
+		.then(() => {
 			navigate('/admin', { replace: true });
 		})
 		.catch(() => {
