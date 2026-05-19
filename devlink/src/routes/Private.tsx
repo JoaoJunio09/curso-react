@@ -9,7 +9,6 @@ interface PrivateProps {
 }
 
 export function Private({ children }: PrivateProps): any {
-
 	const [load, setLoad] = useState(true);
 	const [signed, setSigned] = useState(false);
 

@@ -1,8 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Header } from "../../components/Header";
 import { Input } from "../../components/Input";
 
 import { FiTrash } from 'react-icons/fi';
+import { db } from '../../services/firebaseConnection';
+import {
+	addDoc,
+	collection,
+	onSnapshot,
+	query,
+	orderBy,
+	doc,
+	deleteDoc,
+} from 'firebase/firestore';
+
+interface LinkProps {
+	id: string,
+	name: string,
+	url: string,
+	bg: string,
+	color: string
+}
 
 export function Admin() {
 	const [nameInput, setNameInput] = useState('');
@@ -10,11 +28,63 @@ export function Admin() {
 	const	[textColorInput, setTextColorInput] = useState('#f1f1f1');
 	const [backgroundColorInput, setBackgroundColorInput] = useState('#121212');
 
+	const [links, setLinks] = useState<LinkProps[]>([]);
+
+	useEffect(() => {
+		const linksRef = collection(db, 'links');
+		const queryRef = query(linksRef, orderBy('created', 'asc'));
+
+		const unsub = onSnapshot(queryRef, (snapshot) => {
+			let list = [] as LinkProps[];
+
+			snapshot.forEach((doc) => {
+				list.push({
+					id: doc.id,
+					name: doc.data().name,
+					url: doc.data().url,
+					bg: doc.data().bg,
+					color: doc.data().color
+				});
+			});
+			setLinks(list);
+		});
+
+		return () => {
+			unsub();
+		}
+	}, []);
+
+	function handleRegister(e: FormEvent) {
+		e.preventDefault();
+
+		if (nameInput === '' || urlInput === '') {
+			alert('Preencha todos os campos');
+			return;
+		}
+
+		addDoc(collection(db, 'links'), {
+			name: nameInput,
+			url: urlInput,
+			bg: backgroundColorInput,
+			color: textColorInput,
+			created: new Date()
+		})
+		.then(() => {
+			setNameInput('');
+			setUrlInput('');
+			console.log('CADASTRADO COM SUCESSO');
+		})
+		.catch((err) => {
+			console.log('ERRO AO CADASTRAR NO BANCO ' + err);
+		});
+		
+	}
+
 	return (
 		<div className="flex items-center flex-col min-h-screen pb-7 px-2">
 			<Header />
 			
-			<form className="flex flex-col mt-8 mb-3 w-full max-w-xl">
+			<form className="flex flex-col mt-8 mb-3 w-full max-w-xl" onSubmit={handleRegister}>
 				<label className="text-white mt-2 mb-2.5">Nome do Link</label>
 				<Input
 					placeholder="Digite o nome do link..."
@@ -61,7 +131,7 @@ export function Admin() {
 					</div>
 				)}
 
-				<button type="submit" className="mb-7 bg-blue-600 h-9 rounded-md text-white font-medium gap-4 flex justify-center items-center">
+				<button type="submit" className="cursor-pointer mb-7 bg-blue-600 h-9 rounded-md text-white font-medium gap-4 flex justify-center items-center">
 					Cadastrar
 				</button>
 
